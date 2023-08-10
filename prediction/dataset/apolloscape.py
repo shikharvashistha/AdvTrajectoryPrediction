@@ -128,7 +128,7 @@ class ApolloscapeDataset(BaseDataset):
                 for obj_id, obj in input_data["objects"].items():
                     if np.sum(obj["observe_mask"]) <= 0:
                         invalid_obj_ids.append(obj_id)
-                    
+
                     if np.min(np.concatenate((obj["observe_mask"], obj["future_mask"]), axis=0)) <= 0:
                         if not allow_incomplete_traces:
                             invalid_obj_ids.append(obj_id)

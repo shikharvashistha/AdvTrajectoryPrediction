@@ -84,7 +84,7 @@ class FQAInterface(Interface):
                 if self.smooth == 3 and not detect_tensor(sources[index][:self.obs_length,:2], self.dataset.detect_opts):
                     continue
                 sources[index][:self.obs_length] = smooth_tensor(sources[index][:self.obs_length])
-        
+
         burn_in_steps = self.obs_length
         preds, _ = self.model(sources, masks=s_masks, sizes=sizes, burn_in_steps=burn_in_steps)
         preds = torch.split(preds, sizes, dim=0)[0]
@@ -98,7 +98,7 @@ class FQAInterface(Interface):
                 observe_traces[obj_id] = sources[obj_index][:self.obs_length,:2] * float(np.max(self.dataset.xy_distribution["std"])) + torch.from_numpy(self.dataset.xy_distribution["mean"]).cuda()
                 future_traces[obj_id] = torch.from_numpy(input_data["objects"][obj_id]["future_trace"]).cuda()
                 predict_traces[obj_id] = preds[obj_index][self.obs_length-1:self.obs_length+self.pred_length-1,:] * float(np.max(self.dataset.xy_distribution["std"])) + torch.from_numpy(self.dataset.xy_distribution["mean"]).cuda()
-            loss = perturbation["loss"](observe_traces, future_traces, predict_traces, 
+            loss = perturbation["loss"](observe_traces, future_traces, predict_traces,
                                         perturbation["obj_id"], perturbation["ready_value"][perturbation["obj_id"]], **perturbation["attack_opts"])
         else:
             loss = None
