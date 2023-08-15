@@ -8,8 +8,8 @@ torch.backends.cudnn.enabled = False
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 from prediction.dataset.apolloscape import ApolloscapeDataset
-from prediction.dataset.ngsim import NGSIMDataset
-from prediction.dataset.nuscenes import NuScenesDataset
+#from prediction.dataset.ngsim import NGSIMDataset
+#from prediction.dataset.nuscenes import NuScenesDataset
 from prediction.dataset.generate import data_offline_generator
 from prediction.attack.gradient import GradientAttacker
 from prediction.attack.pso import PSOAttacker
@@ -80,9 +80,9 @@ def attack(model_name, dataset_name, overwrite=0, mode="single_frame", augment=F
         attacker = PSOAttacker(api.obs_length, api.pred_length, attack_length, api, physical_bounds=physical_bounds)
 
     datadir = "data/{}_{}/{}/attack/{}".format(model_name, dataset_name, mode, tag)
-    adv_attack(attacker, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode), 
+    adv_attack(attacker, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode),
                         "{}/raw".format(datadir),
-                        "{}/visualize".format(datadir), 
+                        "{}/visualize".format(datadir),
                         overwrite=overwrite, samples=samples)
 
 
@@ -95,9 +95,9 @@ def normal(model_name, dataset_name, overwrite=0, mode="single_frame", augment=F
 
     datadir = "data/{}_{}/{}/normal/{}".format(model_name, dataset_name, mode, tag)
     print(datadir)
-    normal_test(api, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode), 
+    normal_test(api, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode),
                         "{}/raw".format(datadir),
-                        "{}/visualize".format(datadir), 
+                        "{}/visualize".format(datadir),
                         overwrite=overwrite, samples=samples, attack_length=attack_length)
 
 
@@ -113,7 +113,7 @@ def evaluate(model_name=None, dataset_name=None, overwrite=0, mode="single_frame
         dataset_list = [dataset_name]
 
     tag = get_tag(augment=augment, smooth=smooth, blackbox=blackbox)
-    
+
     for model_name in model_list:
         for dataset_name in dataset_list:
             if model_name == "trajectron_map" and dataset_name in ["apolloscape", "ngsim"]:

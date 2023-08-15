@@ -11,7 +11,7 @@ def add_flags(data):
     for obj_id, obj in data["objects"].items():
         obj["observe_mask"] = (obj["observe_trace"][:,0] > 0).astype(np.int64)
         obj["future_mask"] = (obj["future_trace"][:,0] > 0).astype(np.int64)
-        
+
         if np.sum(obj["observe_mask"]) == 0:
             delete_obj_ids.append(obj_id)
             continue
@@ -36,7 +36,7 @@ def add_flags(data):
 
     for obj_id in delete_obj_ids:
         del data["objects"][obj_id]
-    
+
     return data
 
 
@@ -100,6 +100,6 @@ def input_data_by_attack_step(data, obs_length, pred_length, attack_step):
             "predict_trace": np.zeros((pred_length,2)),
         }
         input_data["objects"][_obj_id] = new_obj
-    
+
     input_data = add_flags(input_data)
     return input_data
