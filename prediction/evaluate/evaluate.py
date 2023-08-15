@@ -21,7 +21,7 @@ class SingleFrameEvaluator(Evaluator):
             for obj_id, obj in data["objects"].items():
                 if obj["complete"] and np.min(obj["predict_trace"]) > 0:
                     obj_ids.append(obj_id)
-        
+
         return obj_ids
 
     def ade(self, data):
@@ -54,7 +54,7 @@ class MultiFrameEvaluator(Evaluator):
             "ade": self.ade,
             "fde": self.fde
         }
-    
+
     def ade(self, data):
         result = []
 

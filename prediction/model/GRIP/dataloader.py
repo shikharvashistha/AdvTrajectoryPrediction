@@ -4,12 +4,12 @@ import logging
 import pickle
 import random
 import torch
-from scipy import spatial 
+from scipy import spatial
 from prediction.model.base.dataloader import DataLoader
 from layers.graph import Graph
 import numpy as np
 from prediction.model.utils import detect_tensor, smooth_tensor
-
+#pip install --upgrade --ignore-installed tensorflow
 
 class GRIPDataLoader(DataLoader):
     def __init__(self, obs_length=6, pred_length=6, graph_args={}, dataset=None):
@@ -17,7 +17,7 @@ class GRIPDataLoader(DataLoader):
         self.max_num_object = graph_args["num_node"]
         self.neighbor_distance = 10
         self.graph = Graph(**graph_args)
-        self.dev = 'cuda:0' 
+        self.dev = 'cuda:0'
         self.dataset = dataset
 
     def preprocess(self, input_data, perturbation, rescale_x=1, rescale_y=1, smooth=False):
@@ -40,8 +40,8 @@ class GRIPDataLoader(DataLoader):
 
         # get object index of perturbation target if any
         obj_index = {_obj_id:index for index, _obj_id in enumerate(visible_object_id_list+non_visible_object_id_list)}
-        
-        # compute the mean values of x and y for zero-centralization. 
+
+        # compute the mean values of x and y for zero-centralization.
         visible_object_value = np.array([
             np.concatenate((input_data["objects"][obj_id]["observe_trace"][self.obs_length-1,:],
                             input_data["objects"][obj_id]["observe_feature"][self.obs_length-1,:]), axis=0) for obj_id in visible_object_id_list])
@@ -55,13 +55,13 @@ class GRIPDataLoader(DataLoader):
         # if their distance is less than $neighbor_distance, we regard them are neighbors.
         neighbor_matrix = np.zeros((self.max_num_object, self.max_num_object))
         neighbor_matrix[:num_visible_object, :num_visible_object] = (dist_xy<self.neighbor_distance).astype(int)
-        
+
         # for all history frames(6) or future frames(6), we only choose the objects listed in visible_object_id_list
         object_feature_list = []
         # non_visible_object_feature_list = []
         for frame_ind in range(self.seq_length):
             now_frame_feature_dict = {}
-            # we add mark "1" to the end of each row to indicate that this row exists, using list(pra_now_dict[frame_ind][obj_id])+[1] 
+            # we add mark "1" to the end of each row to indicate that this row exists, using list(pra_now_dict[frame_ind][obj_id])+[1]
             # -mean_xy is used to zero_centralize data
             # now_frame_feature_dict = {obj_id : list(pra_now_dict[frame_ind][obj_id]-mean_xy)+[1] for obj_id in pra_now_dict[frame_ind] if obj_id in visible_object_id_list}
             for obj_id, obj in input_data["objects"].items():
@@ -73,7 +73,7 @@ class GRIPDataLoader(DataLoader):
                     feature_data = np.concatenate((obj["future_trace"][frame_ind-self.obs_length,:],
                                                    obj["future_feature"][frame_ind-self.obs_length,:]), axis=0)
                     existence = obj["future_mask"][frame_ind-self.obs_length]
-                
+
                 if existence:
                     if obj_id in visible_object_id_list:
                         now_frame_feature_dict[obj_id] = [frame_ind, int(obj_id), obj["type"]]+list(feature_data-mean_xy)+[1]
@@ -85,13 +85,13 @@ class GRIPDataLoader(DataLoader):
 
         # object_feature_list has shape of (frame#, object#, 11) 11 = 10features + 1mark
         object_feature_list = np.array(object_feature_list)
-        
+
         # object feature with a shape of (frame#, object#, 11) -> (object#, frame#, 11)
         object_frame_feature = np.zeros((self.max_num_object, self.seq_length, total_feature_dimension))
-        
+
         # np.transpose(object_feature_list, (1,0,2))
         object_frame_feature[:num_visible_object+num_non_visible_object] = np.transpose(object_feature_list, (1,0,2))
-        
+
         # result: object_frame_feature, neighbor_matrix, m_xy (function process_data)
         all_feature_list = np.transpose(np.array([object_frame_feature]), (0, 3, 2, 1))
         all_adjacency_list = neighbor_matrix
@@ -121,9 +121,9 @@ class GRIPDataLoader(DataLoader):
         no_norm_loc_data = ori_data[:,feature_id]
         data = no_norm_loc_data.clone()
 
-        new_mask = (data[:, :2, 1:]!=0) * (data[:, :2, :-1]!=0) 
+        new_mask = (data[:, :2, 1:]!=0) * (data[:, :2, :-1]!=0)
         data[:, :2, 1:] = (data[:, :2, 1:] - data[:, :2, :-1]).float() * new_mask.float()
-        data[:, :2, 0] = 0    
+        data[:, :2, 0] = 0
         # # small vehicle: 1, big vehicles: 2, pedestrian 3, bicycle: 4, others: 5
         object_type = ori_data[:,2:3]
         data = data.float().to(self.dev)
@@ -131,17 +131,17 @@ class GRIPDataLoader(DataLoader):
         object_type = object_type.to(self.dev) #type
         data[:,:2] = data[:,:2] / rescale_xy
         # result: data, no_norm_loc_data, object_type (function main.py:preprocess_data)
-        
+
         _input_data = data[:,:,:self.obs_length,:] # (N, C, T, V)=(N, 4, 6, 120)
         output_loc_GT = data[:,:2,self.obs_length:,:] # (N, C, T, V)=(N, 2, 6, 120)
         output_mask = data[:,-1:,self.obs_length:,:] # (N, C, T, V)=(N, 1, 6, 120)
         A = A.float().to(self.dev)
-                
+
         return _input_data, A, _ori_data, mean_xy, rescale_xy, no_norm_loc_data, output_loc_GT, output_mask, obj_index
 
     def postprocess(self, input_data, perturbation, *args):
         predicted, ori_data, mean_xy, rescale_xy, no_norm_loc_data, obj_index = args
-        
+
         predicted = predicted * rescale_xy
         ori_output_last_loc = no_norm_loc_data[:,:2,self.obs_length-1,:]
         predicted[:,:2,0,:] = ori_output_last_loc + predicted[:,:2,0,:]
@@ -157,7 +157,7 @@ class GRIPDataLoader(DataLoader):
             for _obj_id in perturbation["ready_value"]:
                 input_data["objects"][str(_obj_id)]["perturbation"] = perturbation["ready_value"][_obj_id].detach().cpu().numpy()
                 input_data["objects"][str(_obj_id)]["observe_trace"] += input_data["objects"][str(_obj_id)]["perturbation"]
-            
+
             if "loss" in perturbation and perturbation["loss"] is not None:
                 observe_traces = {}
                 future_traces = {}
@@ -169,7 +169,7 @@ class GRIPDataLoader(DataLoader):
                     observe_traces[_obj_id] = torch.from_numpy(input_data["objects"][str(_obj_id)]["observe_trace"]).cuda()
                     future_traces[_obj_id] = torch.from_numpy(input_data["objects"][str(_obj_id)]["future_trace"]).cuda()
                     predict_traces[_obj_id] = torch.transpose(predicted[0,:,:,obj_index[_obj_id]], 0, 1)
-                
+
                 if "attack_opts" in perturbation:
                     attack_opts = perturbation["attack_opts"]
                 else:
