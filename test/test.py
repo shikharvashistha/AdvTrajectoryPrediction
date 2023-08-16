@@ -47,6 +47,8 @@ def load_model(model_name, dataset_name, augment=False, smooth=0, models=models)
         model_config[model_name][dataset_name]["pre_load_model"] = model_config[model_name][dataset_name]["pre_load_model"].replace("/original", "/augment_smooth")
         model_config[model_name][dataset_name]["smooth"] = True
 
+    # use torch.device('cpu') to avoid CUDA out of memory
+
     return api_class(
         datasets[dataset_name]["obs_length"],
         datasets[dataset_name]["pred_length"],
@@ -138,7 +140,7 @@ def evaluate(model_name=None, dataset_name=None, overwrite=0, mode="single_frame
 def main():
     parser = argparse.ArgumentParser(description='Testing script for prediction attacks.')
     parser.add_argument("--dataset", type=str, default="apolloscape", help="Name of dataset [apolloscape, ngsim, nuscenes]")
-    parser.add_argument("--model", type=str, default="grip", help="Name of model [grip, fqa, trajectron, trajectron_map]")
+    parser.add_argument("--model", type=str, default="trajectron", help="Name of model [grip, fqa, trajectron, trajectron_map]")
     parser.add_argument("--mode", type=str, default="single_frame", help="Prediction mode [single_frame, multi_frame]")
     parser.add_argument("--augment", action="store_true", default=False, help="Enable data augmentation")
     parser.add_argument("--smooth", type=int, default=0, help="Enable trajectory smoothing -- 0: no smoothing; 1: train-time smoothing; 2: test-time smoothing; 3: test-time smoothing with anomaly detection")

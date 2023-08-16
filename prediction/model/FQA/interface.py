@@ -28,7 +28,7 @@ class FQAInterface(Interface):
             self.obs_length, self.pred_length
         )
 
-        self.device = 'cuda:0'
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.seed = 1
 
         if pre_load_model is not None:

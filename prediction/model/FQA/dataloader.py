@@ -10,7 +10,7 @@ import numpy as np
 class FQADataLoader(DataLoader):
     def __init__(self, obs_length=6, pred_length=6):
         super().__init__(obs_length, pred_length)
-        self.device = 'cuda:0' 
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     def preprocess(self, input_data, xy_distribution, target_obj_id=None):
         source_list = []

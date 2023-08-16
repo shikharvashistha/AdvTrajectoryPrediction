@@ -27,7 +27,7 @@ class GRIPInterface(Interface):
             self.obs_length, self.pred_length, graph_args=self.graph_args, dataset=dataset
         )
 
-        self.dev = 'cuda:0'
+        self.dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         if pre_load_model is not None:
             self.model = self.load_model(self.default_model(in_channels=in_channels), pre_load_model)
         else:
@@ -43,7 +43,7 @@ class GRIPInterface(Interface):
         return model
 
     def load_model(self, model, model_path):
-        checkpoint = torch.load(model_path)
+        checkpoint = torch.load(model_path, map_location=self.dev)
         model.load_state_dict(checkpoint['xin_graph_seq2seq_model'])
         logger.warn('Successfull loaded from {}'.format(model_path))
         return model

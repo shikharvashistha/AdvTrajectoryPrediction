@@ -15,6 +15,7 @@ def multi_frame_prediction(data, api, duration):
     }
 
 def smooth_tensor(feature_tensor):
+    # force the below command to use cpu memory
     new_tensor = torch.zeros_like(feature_tensor).cuda()
     new_tensor += feature_tensor
     new_tensor[1:feature_tensor.shape[0]-1] += (feature_tensor[:-2] + feature_tensor[2:])

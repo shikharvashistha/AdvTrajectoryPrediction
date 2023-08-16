@@ -84,7 +84,7 @@ class TrajectronInterface(Interface):
         env.scenes = [Scene(timesteps=self.seq_length, dt=self.time_step, name="", aug_func=None)]
         self.env = env
 
-        self.dev = 'cuda:0'
+        self.dev = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         if pre_load_model is not None:
             self.model, self.hyperparams = self.load_model(pre_load_model)
