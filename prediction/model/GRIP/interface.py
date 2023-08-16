@@ -27,7 +27,7 @@ class GRIPInterface(Interface):
             self.obs_length, self.pred_length, graph_args=self.graph_args, dataset=dataset
         )
 
-        self.dev = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.dev = torch.device('cpu')
         if pre_load_model is not None:
             self.model = self.load_model(self.default_model(in_channels=in_channels), pre_load_model)
         else:

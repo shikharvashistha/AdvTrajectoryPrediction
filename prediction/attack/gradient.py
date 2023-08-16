@@ -66,6 +66,7 @@ class GradientAttacker(BaseAttacker):
             loss_not_improved_iter_cnt = 0
 
             for _obj_id in perturbation["value"]:
+                # torch.device('cpu')
                 perturbation["value"][_obj_id] = Variable(torch.rand(self.obs_length+self.attack_duration-1,2).cuda() * 2 * self.bound - self.bound)
                 # perturbation["value"][_obj_id] = Variable(torch.zeros(self.obs_length+self.attack_duration-1,2).cuda()).detach()
             
