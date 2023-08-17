@@ -137,7 +137,7 @@ def test_core(api, input_data, obj_id, attack_length, result_path, figure_path):
     for k in range(attack_length):
         args = []
         for trace_name in ["observe_trace", "future_trace", "predict_trace"]:
-            args.append({str(obj_id): torch.from_numpy(result["output_data"][str(k)]["objects"][str(obj_id)][trace_name]).cuda()})
+            args.append({str(obj_id): torch.from_numpy(result["output_data"][str(k)]["objects"][str(obj_id)][trace_name]).cpu()})
         for attack_goal in attack_goals:
             result["loss"][attack_goal] += float(attack_loss(*args, str(obj_id), None, type=attack_goal).item())
     store_data(result, result_path)
@@ -147,6 +147,7 @@ def test_core(api, input_data, obj_id, attack_length, result_path, figure_path):
 
 def adv_attack_core(attacker, input_data, obj_id, attack_goal, result_path, figure_path):
     obj_id = str(obj_id)
+    # print(input_data)
     result = attacker.run(input_data, obj_id, type=attack_goal)
     store_data(result, result_path)
     draw_multi_frame_attack(input_data, obj_id, result["perturbation"], result["output_data"], filename=figure_path)

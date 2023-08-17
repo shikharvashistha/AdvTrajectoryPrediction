@@ -60,7 +60,7 @@ def horizonal_distance(observe_trace, predict_trace, future_trace):
                     future_trace[:-1,:]), 0)).float()
     scale = torch.sqrt(torch.sum(torch.square(direction), 1)).float()
     right_direction = torch.matmul(
-                        torch.tensor([[0., 1.], [-1., 0.]]).float().to("cuda"),
+                        torch.tensor([[0., 1.], [-1., 0.]]).float().to("cpu"),
                         direction.t().float() / scale).t()
     average_distance = torch.sum(offset * right_direction) / predict_trace.shape[0]
     return average_distance

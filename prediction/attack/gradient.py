@@ -67,7 +67,7 @@ class GradientAttacker(BaseAttacker):
 
             for _obj_id in perturbation["value"]:
                 # torch.device('cpu')
-                perturbation["value"][_obj_id] = Variable(torch.rand(self.obs_length+self.attack_duration-1,2).cuda() * 2 * self.bound - self.bound)
+                perturbation["value"][_obj_id] = Variable(torch.rand(self.obs_length+self.attack_duration-1,2).cpu() * 2 * self.bound - self.bound)
                 # perturbation["value"][_obj_id] = Variable(torch.zeros(self.obs_length+self.attack_duration-1,2).cuda()).detach()
             
             # opt_Adam = torch.optim.Adam(list(perturbation["value"].values()), lr=self.learn_rate/10 if perturbation["attack_opts"]["type"] in ["ade", "fde"] else self.learn_rate)
