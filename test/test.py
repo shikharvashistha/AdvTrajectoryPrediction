@@ -85,17 +85,17 @@ def attack(model_name, dataset_name, overwrite=0, mode="single_frame", augment=F
     adv_attack(attacker, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode),
                         "{}/raw".format(datadir),
                         "{}/visualize".format(datadir),
-                        overwrite=overwrite, samples=samples)
+                        overwrite=overwrite, samples=samples) 
 
 
 def normal(model_name, dataset_name, overwrite=0, mode="single_frame", augment=False, smooth=0):
-    api = load_model(model_name, dataset_name, augment=augment, smooth=smooth)
-    DATASET_DIR = "data/dataset/{}".format(dataset_name)
-    samples = datasets[dataset_name]["samples"]
-    attack_length = datasets[dataset_name]["attack_length"] if mode.endswith("multi_frame") else 1
-    tag = get_tag(augment=augment, smooth=smooth, blackbox=False)
+    api = load_model(model_name, dataset_name, augment=augment, smooth=smooth) # loading the model
+    DATASET_DIR = "data/dataset/{}".format(dataset_name) # setting the dataset directory
+    samples = datasets[dataset_name]["samples"] # getting the samples in the dataset
+    attack_length = datasets[dataset_name]["attack_length"] if mode.endswith("multi_frame") else 1 # getting the attack length if the mode is multi_frame then attack_length = 20(in the data) else attack_length = 1
+    tag = get_tag(augment=augment, smooth=smooth, blackbox=False) # getting the tag for the data
 
-    datadir = "data/{}_{}/{}/normal/{}".format(model_name, dataset_name, mode, tag)
+    datadir = "data/{}_{}/{}/normal/{}".format(model_name, dataset_name, mode, tag) # setting the data directory
     print(datadir)
     normal_test(api, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode),
                         "{}/raw".format(datadir),
@@ -148,7 +148,7 @@ def main():
     parser.add_argument("--overwrite", action="store_true", default=False, help="Overwrite existing data")
     args = parser.parse_args()
 
-    normal(dataset_name=args.dataset, model_name=args.model, mode=args.mode, augment=args.augment, smooth=args.smooth, overwrite=args.overwrite)
+    # normal(dataset_name=args.dataset, model_name=args.model, mode=args.mode, augment=args.augment, smooth=args.smooth, overwrite=args.overwrite)
     attack(dataset_name=args.dataset, model_name=args.model, mode=args.mode, augment=args.augment, smooth=args.smooth, blackbox=args.blackbox, overwrite=args.overwrite)
     evaluate(dataset_name=args.dataset, model_name=args.model, mode="normal_"+args.mode, augment=args.augment, smooth=args.smooth, overwrite=args.overwrite)
     evaluate(dataset_name=args.dataset, model_name=args.model, mode=args.mode, augment=args.augment, smooth=args.smooth, blackbox=args.blackbox, overwrite=args.overwrite)

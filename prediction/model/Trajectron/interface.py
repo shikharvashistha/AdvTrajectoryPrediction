@@ -102,6 +102,7 @@ class TrajectronInterface(Interface):
         for filename in filenames:
             try:
                 if filename.split('.')[1] == "pt":
+                    print("I'm here")
                     new_ts = int(filename.split('.')[0].split('-')[1])
                     if new_ts > ts:
                         ts = new_ts

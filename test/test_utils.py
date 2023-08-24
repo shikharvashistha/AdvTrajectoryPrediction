@@ -147,6 +147,7 @@ def test_core(api, input_data, obj_id, attack_length, result_path, figure_path):
 
 def adv_attack_core(attacker, input_data, obj_id, attack_goal, result_path, figure_path):
     obj_id = str(obj_id)
+    # print(input_data)
     result = attacker.run(input_data, obj_id, type=attack_goal)
     store_data(result, result_path)
     draw_multi_frame_attack(input_data, obj_id, result["perturbation"], result["output_data"], filename=figure_path)

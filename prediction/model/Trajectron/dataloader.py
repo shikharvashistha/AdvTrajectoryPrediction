@@ -1,7 +1,7 @@
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Trajectron-plus-plus/trajectron'))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Trajectron-plus-plus/experiments/nuScenes'))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Trajectron-plus-plus/experiments/nuScenes/devkit/python-sdk'))
+# sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Trajectron-plus-plus/experiments/nuScenes'))
+# sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Trajectron-plus-plus/experiments/nuScenes/devkit/python-sdk'))
 import logging
 import pickle
 import random
@@ -79,8 +79,7 @@ class TrajectronDataLoader(DataLoader):
                                     'length',
                                     'width',
                                     'height',
-                                    'heading'])
-
+                                    'heading']) 
         for d in data:
             data_point = pd.Series({'frame_id': int(d[0]),
                                     'type': env.NodeType.PEDESTRIAN if d[2] == 3 else env.NodeType.VEHICLE,
@@ -92,9 +91,11 @@ class TrajectronDataLoader(DataLoader):
                                     'length': d[4][1],
                                     'width': d[4][2],
                                     'height': d[4][3],
-                                    'heading': d[4][4]})
+                                    'heading': d[4][4]
+                                    })
 
-            df_data = df_data.append(data_point, ignore_index=True)
+
+            df_data = df_data._append(data_point, ignore_index=True)
 
         return df_data
 
