@@ -23,7 +23,7 @@ def objective(x, data, obj_id, predictor, loss_func, attack_opts):
 
     for n in range(N):
         perturbation_value = x[n,:].reshape((attack_trace_length, 2))
-        perturbation_tensor = torch.from_numpy(perturbation_value).cuda()
+        perturbation_tensor = torch.from_numpy(perturbation_value).cpu()
         observe_trace_array = data["objects"][obj_id]["observe_trace"]
         ready_perturbation_tensor = hard_constraint(observe_trace_array, perturbation_tensor, attack_opts["bound"], attack_opts["physical_bounds"])
         for k in range(attack_duration):
@@ -68,7 +68,7 @@ class PSOAttacker(BaseAttacker):
         
         # repeat the prediction once to get the best output data
         best_out = {}
-        perturbation_tensor = torch.from_numpy(best_perturb).cuda()
+        perturbation_tensor = torch.from_numpy(best_perturb).cpu()
         observe_trace_array = data["objects"][obj_id]["observe_trace"]
         ready_perturbation_tensor = hard_constraint(observe_trace_array, perturbation_tensor, attack_opts["bound"], attack_opts["physical_bounds"])
         for k in range(self.attack_duration):

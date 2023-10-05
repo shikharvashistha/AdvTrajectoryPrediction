@@ -76,10 +76,10 @@ def attack(model_name, dataset_name, overwrite=0, mode="single_frame", augment=F
     physical_bounds = datasets[dataset_name]["instance"].bounds
     tag = get_tag(augment=augment, smooth=smooth, blackbox=blackbox)
 
-    if not blackbox:
-        attacker = GradientAttacker(api.obs_length, api.pred_length, attack_length, api, seed_num=10, iter_num=100, physical_bounds=physical_bounds, bound=1, learn_rate=0.1)
-    else:
-        attacker = PSOAttacker(api.obs_length, api.pred_length, attack_length, api, physical_bounds=physical_bounds)
+    # if not blackbox:
+    #     attacker = GradientAttacker(api.obs_length, api.pred_length, attack_length, api, seed_num=10, iter_num=100, physical_bounds=physical_bounds, bound=1, learn_rate=0.1)
+    # else:
+    attacker = PSOAttacker(api.obs_length, api.pred_length, attack_length, api, physical_bounds=physical_bounds)
 
     datadir = "data/{}_{}/{}/attack/{}".format(model_name, dataset_name, mode, tag)
     adv_attack(attacker, "data/dataset/{}/multi_frame/raw".format(dataset_name, mode),
